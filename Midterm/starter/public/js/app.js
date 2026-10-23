@@ -97,7 +97,7 @@ function renderCatalog(characterList, searchQuery) {
     col.className = 'col';
 
     const card = document.createElement('div');
-    card.className = 'card h-100 char-card bg-body-tertiary border-secondary-subtle text-center p-2';
+    card.className = 'card h-100 char-card bg-dark text-light border-secondary-subtle text-center p-2';
     card.addEventListener('click', () => openDetail(character.id || character.name));
 
     const img = document.createElement('img');
@@ -173,7 +173,7 @@ function populateModal(character) {
   modalTypes.innerHTML = '';
   [character.species, character.gender].filter(Boolean).forEach((detail) => {
     const badge = document.createElement('span');
-    badge.className = 'badge bg-info text-uppercase px-3 py-2';
+    badge.className = 'badge bg-warning text-dark text-uppercase px-3 py-2';
     badge.textContent = detail;
     modalTypes.appendChild(badge);
   });
@@ -190,7 +190,7 @@ function populateModal(character) {
   });
   (character.formerAffiliations || []).forEach((affiliation) => {
     const badge = document.createElement('span');
-    badge.className = 'badge border border-secondary text-body-secondary';
+    badge.className = 'badge border border-secondary text-light';
     badge.textContent = `Former: ${affiliation}`;
     modalAbilities.appendChild(badge);
   });
@@ -281,7 +281,7 @@ function renderCharacterDetails(character) {
     const heading = document.createElement('strong');
     heading.textContent = 'Wiki: ';
     const link = document.createElement('a');
-    link.className = 'link-info';
+    link.className = 'link-warning';
     link.href = character.wiki;
     link.target = '_blank';
     link.rel = 'noopener noreferrer';
@@ -298,7 +298,7 @@ function renderCharacterDetails(character) {
 function renderRelatedCharacters(label, characters = [], container) {
   characters.forEach((name) => {
     const badge = document.createElement('span');
-    badge.className = 'badge border border-secondary text-body-secondary';
+    badge.className = 'badge border border-secondary text-light';
     badge.textContent = `${label}: ${name}`;
     container.appendChild(badge);
   });
