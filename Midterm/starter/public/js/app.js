@@ -34,6 +34,7 @@ const modalTypes = document.getElementById('modal-types');
 const modalExp = document.getElementById('modal-exp');
 const modalHeight = document.getElementById('modal-height');
 const modalWeight = document.getElementById('modal-weight');
+const modalDetails = document.getElementById('modal-details');
 const modalAbilities = document.getElementById('modal-abilities');
 const modalMoves = document.getElementById('modal-moves');
 const prevBtn = document.getElementById('prev-btn');
@@ -55,8 +56,9 @@ async function loadCatalog(searchQuery = '') {
   hideError();
 
   try {
-    // Define your search enpoint here.
-    const endpoint = '/api';
+    const endpoint = searchQuery
+      ? `/api?search=${encodeURIComponent(searchQuery)}`
+      : '/api';
 
     const response = await fetch(endpoint);
     if (response.status === 404) {
@@ -129,8 +131,7 @@ async function openDetail(identifier) {
   if (identifier === null || identifier === undefined) return;
 
   try {
-    // Set the enpoint for retrieving the information.
-    const response = await fetch(`/api`);
+    const response = await fetch(`/api/${encodeURIComponent(identifier)}`);
 
     if (response.status === 404) {
       if (isModalOpen) characterModal.hide();
@@ -164,40 +165,45 @@ function populateModal(character) {
   modalImg.src = character.image || DEFAULT_IMAGE;
   modalImg.onerror = () => { modalImg.onerror = null; modalImg.src = DEFAULT_IMAGE; };
 
-  modalExp.textContent = character.experience ?? '-';
-  modalHeight.textContent = character.height ?? '-';
-  modalWeight.textContent = character.weight ?? '-';
+  modalExp.textContent = formatTimelineYear(character.born);
+  modalHeight.textContent = formatMeasurement(character.height, 'cm');
+  modalWeight.textContent = formatMeasurement(character.mass, 'kg');
 
-  // Render Types
+  // Render species and gender
   modalTypes.innerHTML = '';
-  (character.types || []).forEach((type) => {
+  [character.species, character.gender].filter(Boolean).forEach((detail) => {
     const badge = document.createElement('span');
     badge.className = 'badge bg-info text-uppercase px-3 py-2';
-    badge.textContent = type;
+    badge.textContent = detail;
     modalTypes.appendChild(badge);
   });
 
+  renderCharacterDetails(character);
+
   // Render Abilities
   modalAbilities.innerHTML = '';
-  (character.abilities || []).forEach((ability) => {
+  (character.affiliations || []).forEach((affiliation) => {
     const badge = document.createElement('span');
     badge.className = 'badge bg-secondary text-capitalize';
-    badge.textContent = ability;
+    badge.textContent = affiliation;
     modalAbilities.appendChild(badge);
   });
+  (character.formerAffiliations || []).forEach((affiliation) => {
+    const badge = document.createElement('span');
+    badge.className = 'badge border border-secondary text-body-secondary';
+    badge.textContent = `Former: ${affiliation}`;
+    modalAbilities.appendChild(badge);
+  });
+  if (modalAbilities.childElementCount === 0) {
+    modalAbilities.textContent = 'No affiliations listed';
+  }
 
   // Render Moves
   modalMoves.innerHTML = '';
-  const moves = character.moves || [];
-  if (moves.length === 0) {
-    modalMoves.innerHTML = '<span class="text-secondary small">No moves listed</span>';
-  } else {
-    moves.forEach((move) => {
-      const badge = document.createElement('span');
-      badge.className = 'badge border border-secondary text-body-secondary text-capitalize';
-      badge.textContent = move;
-      modalMoves.appendChild(badge);
-    });
+  renderRelatedCharacters('Master', character.masters, modalMoves);
+  renderRelatedCharacters('Apprentice', character.apprentices, modalMoves);
+  if (modalMoves.childElementCount === 0) {
+    modalMoves.textContent = 'No masters or apprentices listed';
   }
 
   // Bind Circular Navigation IDs provided by Backend
@@ -206,6 +212,96 @@ function populateModal(character) {
 
   prevBtn.disabled = currentPrevId === null;
   nextBtn.disabled = currentNextId === null;
+}
+
+function formatTimelineYear(year) {
+  if (year === null || year === undefined || year === '' || year === 'unknown') {
+    return '-';
+  }
+
+  const numericYear = Number(year);
+  if (Number.isFinite(numericYear)) {
+    return numericYear < 0 ? `${Math.abs(numericYear)} BBY` : `${numericYear} ABY`;
+  }
+
+  return String(year);
+}
+
+function formatMeasurement(value, unit) {
+  if (value === null || value === undefined || value === '' || value === 'unknown') {
+    return '-';
+  }
+
+  return `${value} ${unit}`;
+}
+
+function formatDetailValue(value) {
+  if (Array.isArray(value)) {
+    return value.filter(Boolean).join(', ');
+  }
+  if (value === null || value === undefined) {
+    return '';
+  }
+  return String(value).trim();
+}
+
+function renderCharacterDetails(character) {
+  modalDetails.replaceChildren();
+
+  const details = [
+    ['Homeworld', character.homeworld],
+    ['Hair color', character.hairColor],
+    ['Eye color', character.eyeColor],
+    ['Skin color', character.skinColor],
+    ['Cybernetics', character.cybernetics],
+    ['Equipment', character.equipment],
+    ['Era', character.era],
+    ['Manufacturer', character.manufacturer],
+    ['Model', character.model],
+    ['Born location', character.bornLocation],
+    ['Died', character.died ? formatTimelineYear(character.died) : ''],
+    ['Died location', character.diedLocation]
+  ];
+
+  details.forEach(([label, value]) => {
+    const detailValue = formatDetailValue(value);
+    if (!detailValue || detailValue.toLowerCase() === 'unknown') return;
+
+    const line = document.createElement('p');
+    line.className = 'mb-1';
+    const heading = document.createElement('strong');
+    heading.textContent = `${label}: `;
+    line.append(heading, document.createTextNode(detailValue));
+    modalDetails.appendChild(line);
+  });
+
+  if (typeof character.wiki === 'string' && /^https?:\/\//i.test(character.wiki)) {
+    const line = document.createElement('p');
+    line.className = 'mb-1';
+    const heading = document.createElement('strong');
+    heading.textContent = 'Wiki: ';
+    const link = document.createElement('a');
+    link.className = 'link-info';
+    link.href = character.wiki;
+    link.target = '_blank';
+    link.rel = 'noopener noreferrer';
+    link.textContent = 'View page';
+    line.append(heading, link);
+    modalDetails.appendChild(line);
+  }
+
+  if (modalDetails.childElementCount === 0) {
+    modalDetails.textContent = 'No additional details listed';
+  }
+}
+
+function renderRelatedCharacters(label, characters = [], container) {
+  characters.forEach((name) => {
+    const badge = document.createElement('span');
+    badge.className = 'badge border border-secondary text-body-secondary';
+    badge.textContent = `${label}: ${name}`;
+    container.appendChild(badge);
+  });
 }
 
 // Event Listeners: Modal Left/Right Navigation

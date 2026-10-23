@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Catalog Exam Interface</title>
+  <title>The Galaxy</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="./css/styles.css">
 </head>
@@ -13,11 +13,11 @@
   <nav class="navbar navbar-expand-lg bg-secondary navbar-dark sticky-top shadow-sm">
     <div class="container">
       <a class="navbar-brand fw-bold d-flex align-items-center gap-2" href="#" id="brand-reset">
-        </span> -- Your app name ---
+        The Galaxy
       </a>
       <form class="d-flex" id="search-form" role="search">
         <div class="input-group">
-          <input class="form-control" type="search" id="search-input" placeholder="Search by name or ID..." aria-label="Search">
+          <input class="form-control" type="search" id="search-input" placeholder="Search by character name..." aria-label="Search by character name">
           <button class="btn btn-dark" type="submit">Search</button>
           <button class="btn btn-outline-light d-none" type="button" id="clear-search-btn">Reset</button>
         </div>
@@ -68,7 +68,7 @@
 
         <div class="modal-body p-4">
           <div class="row align-items-center">
-            <!-- Left Column: Sprite & Types -->
+            <!-- Left Column: Character image and species -->
             <div class="col-md-5 text-center mb-3 mb-md-0">
               <div class="sprite-wrapper p-3 rounded bg-body-tertiary border mb-3">
                 <img id="modal-img" src="" alt="Character Sprite" class="img-fluid characters-detail-img">
@@ -81,31 +81,35 @@
               <div class="row g-2 text-center mb-3">
                 <div class="col-4">
                   <div class="p-2 border rounded bg-body-tertiary">
-                    <small class="text-secondary d-block">Age</small>
+                    <small class="text-secondary d-block">Born</small>
                     <span class="fw-bold" id="modal-exp">-</span>
                   </div>
                 </div>
                 <div class="col-4">
                   <div class="p-2 border rounded bg-body-tertiary">
-                    <small class="text-secondary d-block">Height</small>
+                    <small class="text-secondary d-block">Height (cm)</small>
                     <span class="fw-bold" id="modal-height">-</span>
                   </div>
                 </div>
                 <div class="col-4">
                   <div class="p-2 border rounded bg-body-tertiary">
-                    <small class="text-secondary d-block">Weight</small>
+                    <small class="text-secondary d-block">Mass (kg)</small>
                     <span class="fw-bold" id="modal-weight">-</span>
                   </div>
                 </div>
               </div>
-              <!-- Add the details requested in your exercise. -->
               <div class="mb-3">
-                <h6 class="fw-bold text-secondary mb-1">Features</h6>
+                <h6 class="fw-bold text-secondary mb-1">Details</h6>
+                <div id="modal-details" class="small"></div>
+              </div>
+
+              <div class="mb-3">
+                <h6 class="fw-bold text-secondary mb-1">Affiliations</h6>
                 <div id="modal-abilities" class="d-flex flex-wrap gap-1"></div>
               </div>
 
               <div>
-                <h6 class="fw-bold text-secondary mb-1">Characteristics</h6>
+                <h6 class="fw-bold text-secondary mb-1">Masters &amp; Apprentices</h6>
                 <div id="modal-moves" class="moves-scroll-box p-2 border rounded bg-body-tertiary d-flex flex-wrap gap-1"></div>
               </div>
             </div>
