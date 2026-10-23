@@ -166,7 +166,7 @@ function populateModal(character) {
   modalImg.onerror = () => { modalImg.onerror = null; modalImg.src = DEFAULT_IMAGE; };
 
   modalExp.textContent = formatTimelineYear(character.born);
-  modalHeight.textContent = formatMeasurement(character.height, 'cm');
+  modalHeight.textContent = formatMeasurement(character.height, 'm');
   modalWeight.textContent = formatMeasurement(character.mass, 'kg');
 
   // Render species and gender
